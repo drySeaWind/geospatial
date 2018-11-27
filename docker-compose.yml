@@ -1,0 +1,23 @@
+version: '2'
+services:
+  geospatial:
+    build: .
+    image: geospatial
+    container_name: geospatial
+    ports:
+      - "18080:8080"
+    environment:
+      POSTGRES_DB_HOST: "postgres-test"
+      POSTGRES_DB_NAME: "test"
+      POSTGRES_DB_USERNAME: "postgres"
+      POSTGRES_DB_PASSWORD: "user123"
+  postgres:
+    image: mdillon/postgis
+    container_name: postgres-test
+    environment:
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=user123
+      - POSTGRES_DB=test
+    ports:
+      - "5432:5432"
