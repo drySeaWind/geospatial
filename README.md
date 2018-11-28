@@ -39,7 +39,7 @@ to pass polygon shape in geoJson and query points inside polygons area. json sho
 building the image (in project root folder): " ./build.sh "
 
 needed things:
-maven 3.3.0 or greater
+maven 3.3.0 or greater and 
 JDK 1.8 (8u172 is in the container)
 
 running the container: docker-compose up -d
@@ -48,7 +48,7 @@ wildfly start is not delayed and sometimes postGIS might not be ready for connec
 Wildfly has already started and failed to construct datasource and connection pool. In such case just restart wildfly container
 in order to connect to running postGIS:
 
-docker stop geospatial
+docker stop geospatial, 
 docker start geospatial
 
 # environmental variables
