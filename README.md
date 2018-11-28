@@ -9,7 +9,7 @@ If greater accuracy is desired on may try to update spatial reference system ent
 
 # endpoints
 
-Use curl -v POST http://<yourdockerhost>:18080/geospatial/upload -d @trunks.json --header "Content-Type: application/json"
+Use curl -v POST http://yourdockerhost:18080/geospatial/upload -d @trunks.json --header "Content-Type: application/json"
 to stream points into the database. Input json should contain following json objects:
 
 {"area": 0.000000000, (some numerical data describing the point, double)
@@ -18,7 +18,7 @@ to stream points into the database. Input json should contain following json obj
  "x":000000.00000000000 (latitude in TM35FIN system),
  "y":0000000.00000000000} (longitude in TM35FIN system)
 
-Use curl -v POST http://<yourdockerhost>:18080/geospatial/rest/trunks/inarea -d @test.json --header "Content-Type: application/json"
+Use curl -v POST http://yourdockerhost:18080/geospatial/rest/trunks/inarea -d @test.json --header "Content-Type: application/json"
 
 to pass polygon shape in geoJson and query points inside polygons area. json should look like this:
 
@@ -36,10 +36,11 @@ to pass polygon shape in geoJson and query points inside polygons area. json sho
 
 # docker
 
-building the image: ./build.sh
+building the image (in project root folder): " ./build.sh "
+
 needed things:
--maven 3.3.0 or greater
--JDK 1.8 (8u172 is in the container)
+maven 3.3.0 or greater
+JDK 1.8 (8u172 is in the container)
 
 running the container: docker-compose up -d
 
