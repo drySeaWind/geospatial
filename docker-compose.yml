@@ -11,6 +11,7 @@ services:
       POSTGRES_DB_NAME: "test"
       POSTGRES_DB_USERNAME: "postgres"
       POSTGRES_DB_PASSWORD: "user123"
+      RESULTSET_LIMIT: "20000"
   postgres:
     image: mdillon/postgis
     container_name: postgres-test

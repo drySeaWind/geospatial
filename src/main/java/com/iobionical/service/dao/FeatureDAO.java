@@ -35,10 +35,11 @@ public class FeatureDAO {
     private static final String LOC = "loc";
     private static final String X = "X1";
     private static final String Y = "Y1";
+    private static final String RESULTSET_LIMIT = "RESULTSET_LIMIT";
+    private static final String DEFAULT_LIMIT = "20000";
 
     /**
-     * stores a new row into feature table. Converts TM35FIN (SRID3067)
-     * coordinates into WGS84 (SRID 4326) in PostGIS
+     * stores a new row into feature table.
      *
      * @param feat object to be inserted. Holds coordinates in TM35FIM
      * coordinate system
@@ -58,7 +59,6 @@ public class FeatureDAO {
         } finally {
             stmt.close();
         }
-
     }
 
     /**
@@ -66,7 +66,7 @@ public class FeatureDAO {
      * geojson input object.
      *
      * @param con Connection from connection pool
-     * @return
+     * @return list of Feature objects holding result data
      */
     public List<Feature> fetchFeatures(Connection con, JsonObject json) throws SQLException {
 
@@ -100,7 +100,7 @@ public class FeatureDAO {
         }
     }
 
-    public List<Feature> getResultsAsFeatureArray(ResultSet resultSet) {
+    private List<Feature> getResultsAsFeatureArray(ResultSet resultSet) {
 
         List<Feature> results = new ArrayList<>();
 
@@ -120,6 +120,13 @@ public class FeatureDAO {
         return results;
     }
 
+    /**
+     * forms a SQL insert String. Converts TM35FIN (SRID3067) coordinates into
+     * WGS84 (SRID 4326) in PostGIS
+     *
+     * @param feat feature object which holds data items
+     * @return String for SQL statement
+     */
     public String getInsertSqlAsString(Feature feat) {
         return "INSERT INTO feature "
                 + "(" + AREA + "," + HEIGHT + "," + SPECIES + "," + LOC + ") VALUES('"
@@ -130,21 +137,39 @@ public class FeatureDAO {
                 + TM35FIN_SRID + ")," + WGS84_SRID + "))";
     }
 
+    /**
+     * forms a SQL Query String. SRID needs to be present with PostGIS
+     * geometries
+     *
+     * @param json geoJson which holds coordinate points for polygon
+     * @return String for SQL statement
+     */
     public String getQuerySqlAsString(JsonObject json) {
         return "SELECT " + AREA + "," + HEIGHT + "," + SPECIES + ","
                 + "ST_X(" + LOC + ") AS X1, ST_Y(" + LOC + ") AS Y1 "
                 + "from feature where "
                 + "ST_Within(loc, "
                 + "ST_SetSRID("
-                + "ST_GeomFromGeoJSON('" + json + "')," + WGS84_SRID + "))";
+                + "ST_GeomFromGeoJSON('" + json + "')," + WGS84_SRID + ")) LIMIT " + getResultSetLimit();
     }
 
+    /**
+     * forms a SQL table creation String. Point geometry in WGS84 (SRID 4326)
+     * system in PostGIS
+     *
+     * @return String for SQL statement
+     */
     public String getInitSqlAsString() {
         return "CREATE TABLE feature (id serial primary key, "
                 + AREA + " decimal(30,28), "
                 + HEIGHT + " decimal(30,28), "
                 + SPECIES + " varchar(100), "
                 + LOC + " geometry(Point," + WGS84_SRID + "))";
+    }
+
+    private String getResultSetLimit() {
+        return System.getenv(RESULTSET_LIMIT) != null ? System.getenv(RESULTSET_LIMIT) : DEFAULT_LIMIT;
+
     }
 
 }
