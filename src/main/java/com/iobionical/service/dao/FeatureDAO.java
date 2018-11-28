@@ -71,12 +71,15 @@ public class FeatureDAO {
     public List<Feature> fetchFeatures(Connection con, JsonObject json) throws SQLException {
 
         Statement stmt = null;
+        ResultSet rs = null;
         try {
             stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(getQuerySqlAsString(json));
+            rs = stmt.executeQuery(getQuerySqlAsString(json));
             return getResultsAsFeatureArray(rs);
         } finally {
+            rs.close();
             stmt.close();
+            con.close();
         }
     }
 
